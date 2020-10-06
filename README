@@ -1,0 +1,168 @@
+Cartoon README
+
+Handin: Final
+
+Containment Diagram: CartoonContainmentDiagram.pdf
+
+Overview:
+The following lays out the over-arching structure of all my classes and how they interact:
+- App classes creates a MenuPaneOrganizer and displays its root to the Stage
+- MenuPaneOrganizer is responsible for all of the Users interactions with the Menu.
+	- The Initial MenuPaneOrganizer shows 3 Options: Regular Game, Multiplayer Game, and Quit
+	- If the User selects either of the two Game options, the root Pane of the MenuPaneOrganizer will be updated, and the center node will change to an options menu
+	- By Clicking on the LOGO image on the main menu, the User can toggle between different themes. These themes give the user different objectives in the game and different characters they can play with.
+	- The options menu gives the user the option to select the difficulty (Speed at which the timeline updates), the number of rows and columns, and the character (either 1 or 2 characters depending on if the user chose a regular or multiplayer game). Furthermore, a theme-specific "Silly Premise" is displayed in a label at the top of the screen.
+	- Finally, once the User starts the game from the options menu, a PaneOrganizer is created (Either RegGamePaneOrganizer or MultiplayerGamePaneOrganizer). This PaneOrganizer is created by the GameSceneContainer class, using the specifications given by the user in the options menu.
+	- These PaneOrganizers instantiate the Game (either RegGame or MultiPlayerGame), and also instantiate a Labels pane on the side of the screen. The PaneOrganizers are also responsible for handling button clicks on the side panes of the screen.
+	- The Game Classes instantiate Snake and Food objects, and start the timeline. The MultiplayerGame has a few animations and transitions before the timeline is officially started.
+	- The Snake Objects instantiate a BodyHead and set the location of the head to the starting coord. The type of BodyHead is determined back in the options menu, when the user selects which character they are using. If the user selects "Dwight 1" in "The Office" theme, they are using a composite shape made of Ellipses, Arcs, and SVGS. Otherwise, all other characters are made from images. 
+	- The timeline is repeatedly updating the Snake to move in the direction that the user specifies using the keypad. 
+	- Furthermore, the timeline calls update, which checks for collisions between the snakes BodyHead and its own BodyTorso, or between the Snakes BodyHead and the Food object. 
+	- If the snake collides with its own bodyTorso, the game is immediately over. If the snake collides with the Food object, one BodyTorso is added on to the end of the snake, and the snake stays alive.
+	- When a BodyTorso is added to the snake, it is added to a LinkedList in the Snake class. When the Snake is updated at every timeline interval, the BodyTorso is moved in the direction it is supposed to be traveling, and then its direction is set equal to the last direction of the Torso one link of ahead of it in the LinkedList.
+	- After the timeline has updated all of this, the Labels on the games pane organizer are updated. For a regular game, the Labels tell the User what their current score is, how much time has elapsed, the users score per minute, and the distance to the current Food object. For Multiplayer Games, the Labels display how much time is remaining, and what score each user has.
+	- When the game Is ended, the Pane that the game was displayed in is replaced with an ending Pane. For Regular games it shows the score and a button to go back to the home-screen. For Multiplayer games, it describes how and who won the game, and shows Gifs of each character, dependent on the outcome.
+
+
+
+
+Design Choices:
+
+- LinkedList vs. ArrayList
+	- To Store all of the Snakes BodyParts, I decided to use a LinkedList, rather than an ArrayList. When a Snake eats the Food, it needs to add a new BodyPart to the end of the list. It is much faster to append to the end of a List with LinkedLists because each List item is linked to its predecessor.
+
+- No "Game" or "GamePaneOrganizer" Abstract Classes
+	-Initially, when starting the project, I didn't realize I was going to make multiple GameTypes. So when I wrote the different GameTypes, their functions ended up being very different, and it wasn't worth it to try and consolidate the few functions possible into abstract Game and GamePaneOrganizer classes.
+
+- GameConfig
+	- The GameConfig is used to store the # of rows and columns, the height of the rows and columns, and the timeline delay. Initially, these were all Constants. However, when I added the options menu, I decided that I wanted these all to be variable. Thus, I needed to be able to instantiate after the options were selected. I thought it was easier to have a separate class to store the configurations, rather than to store them in my Game or Games PaneOrganizer classes.
+
+- Collideable
+	- Allows the snake to iterate through Collideable objects and check if a collision  has occurred.
+
+- Why So Many Enums?
+	- The enums made it easier to store constant OBJECTS. For example, the themes class is essentially a constant, it just stores multiple different instances of the Theme Object. This made it extremely easy to add themes to my project (all I need to pass in are a list of characters, the game premise, and a few basic images such as the background image, the logo, and the food image).
+
+
+
+
+
+Known Bugs:
+	- No known bugs
+
+
+
+
+Personal Connection:
+
+- This summer, I watched every season of the office. I knew it was a great fit to make a Cartoon, not just about the theme of the class, but about a show that I was obsessive over for a few months. When I started thinking about more theme ideas, my mind oddly jumped to animated films. At first, of course, it jumped to Toy Story. One of my all time favorite movies as a kid, and of course Andy is named after our very own professor. But then I started thinking about all of the other Pixar films I watched as a child, and started reminiscing about the characters that I loved and hated the most. This project allowed me to dive back into those forgotten memories of childhood.
+
+
+
+
+Instructions:
+
+- Select Either 'Regular Game' (Single Player) or 'MultiPlayer Game'
+- Use the options menu to select the Difficulty (speed), # of Rows and Columns, and Character(s).
+- RECOMMENDED CONFIGURATIONS:
+	-If you want to see the images and shapes in the game, Select a "5x5" size with an "Easy" difficulty
+	- If you want to actually play the game, select the "10x10" or "15x15" size, with a "Medium" difficulty.
+- For Single Player Game:
+	- Objective of the Game is to collect as many Food Items without colliding with your own BodyParts.
+	- Use Arrow Keys to Control the Snake
+	- Timer Goes on indefinitely, so take your time
+- For MultiPlayer Game:
+	- Timer lasts for 60 seconds.
+	- Objective is to get more food objects than the other player in those 60 seconds
+	- However, the Collide rule still applies: If your head collides with one of YOUR body parts before the 60 seconds is up, you automatically lose (Colliding with opponent body parts does nothing).
+	- Assuming neither Player collided with themselves and ended the game, the user with the Most points at the end of the game wins!
+
+
+
+
+
+Extra Credit:
+
+- Multiple Scenes
+- Implementing a Game Component -> there is an objective to the user
+- Multiple Themes
+- Use of Images
+- Use of Transitions
+- Use of ComboBox
+
+
+
+
+Minimal Functionality Requirements:
+	Because my project is large, it may be hard to spot all of the components that fulfill the minimal functionality requirements, so I put them here to make it easier:
+	- Both the Regular and Multiplayer Games implement a timeline
+	- The CustomDwightHead class creates and updates a Composite shape
+	- The Labels on the side of the RegGame are updated based on both the Shapes position on the screen (distance to food), as well as the timeline (timer) 
+	- The KeyHandler in both the Regular and Multiplayer games updates the direction that the Snake(s) are traveling in.
+	- The quit button on the main menu and on the Regular and multiplayer Games quits the program.
+	- The "Instructions" section of this README describes in detail how to control the snake and what each key does to the snake.
+
+
+
+***** EASTER EGG - SPOILER BELOW *****
+In the Main Menu, if the user clicks on the Logo (I.E. Dunder Mifflin Logo), the game will toggle through different themes. This allows the User to play with different sets of characters, and go for different Objectives.
+
+
+
+THEMES:
+- THE OFFICE:
+	- Available Characters:
+		- Dwight Schrute (1)
+		- Dwight Schrute (2)
+		- Jim Halpert
+		- Michael Scott
+		- Andy Bernard
+		- Pam Halpert
+	- Premise:
+		- Mose dropped all of his beets while harvesting them on Schrute Farms. Help The Office characters find all of the Beets.
+
+- TOY STORY:
+	- Available Characters:
+		- Woody
+		- Buzz Lightyear
+		- Mr. Potato Head
+		- Alien
+		- Jessie
+	- Premise:
+		- The Toy Story characters have come to life and are helping Dwight look for the dropped Beets.
+
+- MONSTERS, INC.:
+	- Available Characters:
+		- Mike Wazowski
+		- Sully
+		- Roz
+		- Randall
+		- Boo
+	- Premise:
+		- Mike spilled the 'scare tanks' all over the 'scare floor'. Help the characters collect them from off the Scare Floor.
+
+- CARS: 
+	- Available Characters:
+		- Lightning McQueen
+		- Mater
+		- Doc Hudson
+		- Luigi
+		- Sally
+		- Guido
+	- Premise:
+		- Lightning lost the Piston Cup (Trophy), and needs to get it back.
+
+- NEMO:
+	- Available Characters:
+		- Dory
+		- Marlon
+		- Crush
+		- Bruce
+	- Premise:
+		- They lost Nemo and need to find him before the scuba divers bring him to a tank.
+
+- CS15:
+	- Available Characters:
+		- Andy Van Dam
+	- Premise:
+		- Help Andy give A's to as many people as possible on their Cartoon projects.
